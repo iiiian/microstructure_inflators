@@ -88,7 +88,7 @@ namespace
     }
 }
 
-int main()
+int main(int argc, char **argv)
 {
     const auto directory = std::filesystem::temp_directory_path()
         / ("inflator-api-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
@@ -97,6 +97,11 @@ int main()
     {
         for (const int dimension : {2, 3})
         {
+            if (argc > 1 && dimension != std::stoi(argv[1]))
+            {
+                continue;
+            }
+            std::cout << "Testing " << dimension << "D inflation" << std::endl;
             const auto wire = directory / "wire.obj";
             std::ofstream output(wire);
             output << "v 0 0 0\nv 1 0 0\nv 0 1 0\nv -1 0 0\nv 0 -1 0\n";
