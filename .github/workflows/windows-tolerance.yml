@@ -1,0 +1,35 @@
+name: Windows tolerance diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tolerance:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare isolated reproducer
+        shell: pwsh
+        run: |
+          @'
+          #include "src/lib/isosurface_inflator/FuzzySign.hh"
+          #include <iostream>
+          int main()
+          {
+              std::cout << "sizeof(long): " << sizeof(long) << '\n';
+              std::cout << "DEFAULT_TOL: " << DEFAULT_TOL::num << " / " << DEFAULT_TOL::den << '\n';
+              std::cout << "isZero(0): " << isZero(0) << '\n';
+              std::cout << "isPositive(0): " << isPositive(0) << '\n';
+              return isZero(0) && isPositive(0) ? 0 : 1;
+          }
+          '@ | Set-Content tolerance.cpp
+      - name: Compile and run original tolerance code
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cl /nologo /EHsc /std:c++17 /permissive- tolerance.cpp /Fe:tolerance.exe
+          if errorlevel 1 exit /b 1
+          tolerance.exe
