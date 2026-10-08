@@ -1,4 +1,6 @@
 #include "CGALClippedVolumeMesher.hh"
+#include <boost/mpl/if.hpp>
+#include <CGAL/Random.h>
 
 #if MICRO_WITH_TBB
 #define CGAL_LINKED_WITH_TBB
@@ -157,16 +159,10 @@ mesh(const SignedDistanceRegion<3> &sdf,
     // Mesh generation
     // std::cout << "Making mesh..." << std::endl;
     BENCHMARK_START_TIMER("make_mesh_3");
-    C3t3 c3t3 = CGAL::make_mesh_3<C3t3>(domain, criteria);
-    // CGAL sometimes returns an empty mesh for some patterns due to
-    // insufficient initialization:
-    // https://github.com/CGAL/cgal/issues/2416
-    // For some reason this is considered "not a bug," and Laurent recommended
-    // the following workaround:
-    if (c3t3.number_of_facets() == 0) {
-        CGAL::internal::Mesh_3::init_c3t3(c3t3, domain, criteria, 20);
-        refine_mesh_3(c3t3, domain, criteria);
-    }
+    CGAL::get_default_random() = CGAL::Random(0);
+    C3t3 c3t3 = CGAL::make_mesh_3<C3t3>(domain, criteria,
+        CGAL::parameters::perturb(CGAL::parameters::time_limit(0)),
+        CGAL::parameters::exude(CGAL::parameters::time_limit(0)));
     BENCHMARK_STOP_TIMER("make_mesh_3");
 
     // Access triangulation directly

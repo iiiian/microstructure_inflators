@@ -1,0 +1,4 @@
+{
+    global: _ZN8inflator7inflate*;
+    local: *;
+};

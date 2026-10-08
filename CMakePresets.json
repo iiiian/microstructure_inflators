@@ -1,0 +1,33 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "library",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/library",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "MICRO_BUILD_BINARIES": "OFF",
+                "MICRO_BUILD_LIBRARY_TESTS": "ON",
+                "MICRO_WITH_TBB": "OFF",
+                "MICRO_WITH_UBUNTU": "OFF",
+                "LIBIGL_WITH_OPENGL": "OFF",
+                "LIBIGL_WITH_OPENGL_GLFW": "OFF",
+                "LIBIGL_WITH_OPENGL_GLFW_IMGUI": "OFF",
+                "LIBIGL_WITH_VIEWER": "OFF"
+            }
+        },
+        {
+            "name": "sanitize",
+            "inherits": "library",
+            "binaryDir": "${sourceDir}/build/sanitize",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -g1",
+                "CMAKE_C_FLAGS": "-fsanitize=address,undefined -g1",
+                "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined",
+                "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=address,undefined"
+            }
+        }
+    ]
+}

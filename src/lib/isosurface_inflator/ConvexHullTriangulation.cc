@@ -1,6 +1,7 @@
 #include "ConvexHullTriangulation.hh"
 
 #include "DisableWarnings.hh"
+#include <boost/mpl/if.hpp>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Triangulation_3.h>
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
