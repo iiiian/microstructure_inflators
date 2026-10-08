@@ -54,6 +54,11 @@ jobs:
       CMAKE_BUILD_PARALLEL_LEVEL: 2
     steps:
       - uses: actions/checkout@v4
+      - name: Cache dependency binaries
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: windows-inflator-vcpkg-v1
       - name: Install dependencies
         shell: pwsh
         run: vcpkg install boost-headers:x64-windows gmp:x64-windows mpfr:x64-windows
