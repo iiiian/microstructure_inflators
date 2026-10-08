@@ -16,7 +16,7 @@
 #include <ratio>
 #include <cmath>
 
-typedef std::ratio<1, long(1e12)> DEFAULT_TOL;
+typedef std::ratio<1, 1000000000000LL> DEFAULT_TOL;
 template<typename TOL = DEFAULT_TOL> bool isZero    (double val) { return std::abs(val) < (double(TOL::num) / double(TOL::den)); }
 template<typename TOL = DEFAULT_TOL> bool isPositive(double val) { return val >          -(double(TOL::num) / double(TOL::den)); }
 template<typename TOL = DEFAULT_TOL> bool isNegative(double val) { return val <           (double(TOL::num) / double(TOL::den)); }

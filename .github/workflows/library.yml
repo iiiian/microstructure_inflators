@@ -86,7 +86,6 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          set "CL=/DDEBUG_MARCHING_SQUARES=1"
           cmake --preset library -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_TOOLCHAIN_FILE="%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_INSTALL_PREFIX="%CD%/build/install"
           if errorlevel 1 exit /b 1
           cmake --build build/library --target inflator_api_test

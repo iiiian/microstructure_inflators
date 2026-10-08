@@ -17,6 +17,7 @@ jobs:
           @'
           #include "src/lib/isosurface_inflator/FuzzySign.hh"
           #include <iostream>
+          static_assert(DEFAULT_TOL::num == 1 && DEFAULT_TOL::den == 1000000000000LL);
           int main()
           {
               std::cout << "sizeof(long): " << sizeof(long) << '\n';
