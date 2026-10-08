@@ -37,3 +37,8 @@ http://julianpanetta.com/2d_isosurface_hull_autocover_results/flipper.html
 | `worst_case_stress/`    | Compute the worst-case stress for a given pattern. |
 | `slice_supporter/`      | Generate raft + support structures below a microstructure (operates on slice images). |
 | `topology_enumeration/` | Combinatorially generate cubic topologies on the base tetrahedron |
+# Library interface
+
+For the dependency-isolated shared library, see [docs/library.md](docs/library.md).
+Its public API supports 2D/3D periodic meshes and shape velocities without exposing
+CGAL, Eigen, or MeshFEM headers to consumers.

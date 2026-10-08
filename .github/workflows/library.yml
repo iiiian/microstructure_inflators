@@ -1,0 +1,49 @@
+name: Library
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: gcc
+            cxx: g++
+          - cc: clang
+            cxx: clang++
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build g++ clang libboost-dev libgmp-dev libmpfr-dev
+      - name: Configure
+        run: cmake --preset library -DCMAKE_INSTALL_PREFIX="$PWD/build/install" -DCMAKE_INSTALL_LIBDIR=lib
+      - name: Build
+        run: cmake --build build/library --target inflator_api_test
+      - name: Test 2D and 3D
+        run: ctest --test-dir build/library --output-on-failure
+      - name: Install and test standalone consumer
+        run: |
+          cmake --install build/library
+          cmake -S tests/consumer -B build/consumer -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$PWD/build/install"
+          cmake --build build/consumer
+          ctest --test-dir build/consumer --output-on-failure
+      - name: Check exported interface
+        run: |
+          test "$(find build/install/include -type f | wc -l)" -eq 1
+          nm -D --defined-only build/install/lib/libinflator.so | c++filt | tee build/exports.txt
+          test "$(wc -l < build/exports.txt)" -eq 1
+          grep -F 'inflator::inflate(inflator::Request const&)' build/exports.txt
