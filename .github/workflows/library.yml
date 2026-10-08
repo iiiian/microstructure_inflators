@@ -47,3 +47,34 @@ jobs:
           nm -D --defined-only build/install/lib/libinflator.so | c++filt | tee build/exports.txt
           test "$(wc -l < build/exports.txt)" -eq 1
           grep -F 'inflator::inflate(inflator::Request const&)' build/exports.txt
+
+  windows:
+    runs-on: windows-2022
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        shell: pwsh
+        run: vcpkg install boost-headers:x64-windows gmp:x64-windows mpfr:x64-windows
+      - name: Configure and build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake --preset library -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_TOOLCHAIN_FILE="%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_INSTALL_PREFIX="%CD%/build/install"
+          if errorlevel 1 exit /b 1
+          cmake --build build/library --target inflator_api_test
+      - name: Test 2D and 3D
+        run: ctest --test-dir build/library --output-on-failure
+      - name: Install and test standalone consumer
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake --install build/library
+          if errorlevel 1 exit /b 1
+          cmake -S tests/consumer -B build/consumer -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%CD%/build/install"
+          if errorlevel 1 exit /b 1
+          cmake --build build/consumer
+          if errorlevel 1 exit /b 1
+          set "PATH=%CD%\build\install\bin;%VCPKG_INSTALLATION_ROOT%\installed\x64-windows\bin;%PATH%"
+          ctest --test-dir build/consumer --output-on-failure
