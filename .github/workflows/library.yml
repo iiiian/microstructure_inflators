@@ -55,13 +55,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Cache dependency binaries
-        uses: actions/cache@v4
+        id: dependencies
+        uses: actions/cache/restore@v4
         with:
           path: ~/AppData/Local/vcpkg/archives
-          key: windows-inflator-vcpkg-v1
+          key: windows-inflator-vcpkg-v2
       - name: Install dependencies
         shell: pwsh
-        run: vcpkg install boost-headers:x64-windows gmp:x64-windows mpfr:x64-windows
+        run: >-
+          vcpkg install --triplet x64-windows
+          boost-bimap boost-callable-traits boost-foreach boost-format boost-graph
+          boost-heap boost-multiprecision boost-parameter boost-ptr-container
+          boost-random boost-typeof boost-unordered gmp mpfr
+      - name: Save dependency binaries
+        if: steps.dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: windows-inflator-vcpkg-v2
       - name: Configure and build
         shell: cmd
         run: |
