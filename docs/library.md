@@ -78,6 +78,20 @@ dependencies automatically. CLI programs remain available with
 
 The GitHub Actions `Library` workflow checks GCC and Clang on Ubuntu 24.04,
 including a separately configured installed-package consumer and the exported
-symbol/header boundary. Run it locally with `act -W .github/workflows/library.yml
--P ubuntu-24.04=catthehacker/ubuntu:act-latest --concurrent-jobs 1`.
-These Linux container tests do not establish macOS or Windows compatibility.
+symbol/header boundary. It also builds and runs the 2D/3D tests and installed
+consumer on native Windows 2022 with MSVC and vcpkg. The workflow lists the
+required modular Boost packages; `boost-headers` alone is insufficient.
+Use the same MSVC runtime configuration in the library and consumer, and put
+the installed library's `bin` directory and vcpkg's runtime DLL directory on
+`PATH` when running an installed consumer.
+
+Run the Linux jobs locally with `act push --job linux
+-W .github/workflows/library.yml -P ubuntu-24.04=catthehacker/ubuntu:act-latest`.
+Linux `act` containers cannot execute the native Windows or macOS jobs.
+No macOS validation is provided.
+
+The symmetry tolerance uses a 64-bit integer denominator. The original
+`long(1e12)` expression overflows Windows' 32-bit `long`, producing a negative
+tolerance with MSVC and rejecting valid graph vertices on symmetry planes.
+The manually dispatched `Windows tolerance diagnostic` workflow isolates this
+expression without building or installing any dependencies.

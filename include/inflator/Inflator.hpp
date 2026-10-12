@@ -5,7 +5,15 @@
 #include <string>
 #include <vector>
 
+#if defined(_WIN32)
+#if defined(INFLATOR_BUILDING_LIBRARY)
+#define INFLATOR_EXPORT __declspec(dllexport)
+#else
+#define INFLATOR_EXPORT __declspec(dllimport)
+#endif
+#else
 #define INFLATOR_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace inflator
 {

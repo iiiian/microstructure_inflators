@@ -1,5 +1,6 @@
 add_library(inflator SHARED Inflator.cpp)
 add_library(inflator::inflator ALIAS inflator)
+target_compile_definitions(inflator PRIVATE INFLATOR_BUILDING_LIBRARY)
 target_compile_features(inflator PUBLIC cxx_std_17)
 target_include_directories(inflator PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -26,5 +27,7 @@ if(MICRO_BUILD_LIBRARY_TESTS)
     enable_testing()
     add_executable(inflator_api_test test_api.cpp)
     target_link_libraries(inflator_api_test PRIVATE inflator::inflator)
-    add_test(NAME inflator_api COMMAND inflator_api_test)
+    add_test(NAME inflator_api_2d COMMAND inflator_api_test 2)
+    add_test(NAME inflator_api_3d COMMAND inflator_api_test 3)
+    set_tests_properties(inflator_api_2d inflator_api_3d PROPERTIES TIMEOUT 120)
 endif()
