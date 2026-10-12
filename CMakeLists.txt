@@ -2,9 +2,14 @@
 # General Informations
 ################################################################################
 
+cmake_minimum_required(VERSION 3.18.0)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+
 project(Microstructures)
 
-cmake_minimum_required(VERSION 3.18.0)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
 # CMP0063: Honor visibility properties for all target types.
 if(POLICY CMP0063)
@@ -92,6 +97,10 @@ option(MICRO_WITH_TBB        "Compile with TBB"                                 
 option(MICRO_WITH_CERES      "Compile with Ceres"                                                   ON)
 option(MICRO_BUILD_TOOLS     "Build tools, e.g. voxel2mesh"                                         OFF)
 option(MICRO_BUILD_BINARIES  "Build executable programs" ${MICRO_TOPLEVEL_PROJECT})
+option(MICRO_BUILD_LIBRARY_TESTS "Build the public library tests" OFF)
+if(MICRO_BUILD_LIBRARY_TESTS)
+    enable_testing()
+endif()
 option(MICRO_WITH_UBUNTU     "Enable hack around GCC bug on Ubuntu wtih wjacob/tbb 2017" ${OS_IS_UBUNTU})
 
 # Options for libigl modules
@@ -155,6 +164,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/isosurface_inflator)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/MeshFEM)
 
 add_subdirectory(src/lib)
+add_subdirectory(src/api)
 
 if(MICRO_BUILD_BINARIES)
     add_subdirectory(src/bin)

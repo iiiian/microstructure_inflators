@@ -97,8 +97,8 @@ endfunction()
 ## CGAL
 function(micro_download_cgal)
     micro_download_project(cgal
-        URL     https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.12/CGAL-4.12.tar.xz
-        URL_MD5 b12fd24dedfa889a04abfaea565a88bd
+        URL      https://github.com/CGAL/cgal/releases/download/v5.6.2/CGAL-5.6.2.tar.xz
+        URL_HASH SHA256=458f60df8e8f1f2fdad93c8f24e1aa8f4b095cc61a14fac81b90680d7306a42e
     )
 endfunction()
 
